@@ -63,25 +63,39 @@ const run = async () => {
 
     app.get("/api/all/data", async (req, res) => {
       try {
-        const data = await productsCollection.find().toArray();
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 6;
 
-        if (!data) {
-          throw new Error("Faild Api Call")
-        }
+        const skip = (page - 1) * limit;
 
-        res.status(200).send(data)
+        const totalCampaigns = await productsCollection.countDocuments();
 
-      }
-      catch (error) {
+        const totalPages = Math.ceil(totalCampaigns / limit);
+
+        const data = await productsCollection
+          .find()
+          .skip(skip)
+          .limit(limit)
+          .toArray();
+
+        res.status(200).send({
+          success: true,
+          data,
+          currentPage: page,
+          totalCampaigns,
+          totalPages
+        });
+
+      } catch (error) {
         console.error("Error fetching data:", error);
+
         res.status(500).send({
           success: false,
           message: "Internal Server Error",
           error: error.message
         });
       }
-    })
-
+    });
 
     await client.db("admin").command({ ping: 1 });
     console.log("✅ Pinged your deployment successfully!");
