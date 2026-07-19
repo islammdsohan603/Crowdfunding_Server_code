@@ -36,7 +36,7 @@ const run = async () => {
       res.send("🚀 E-commerce Backend Server Running");
     });
 
-    // get all crowdfunding data
+    // get funded crowdfunding data
 
     app.get("/api/funded/data", async (req, res) => {
       try {
@@ -58,6 +58,30 @@ const run = async () => {
         });
       }
     })
+
+    // get all data api created
+
+    app.get("/api/all/data", async (req, res) => {
+      try {
+        const data = await productsCollection.find().toArray();
+
+        if (!data) {
+          throw new Error("Faild Api Call")
+        }
+
+        res.status(200).send(data)
+
+      }
+      catch (error) {
+        console.error("Error fetching data:", error);
+        res.status(500).send({
+          success: false,
+          message: "Internal Server Error",
+          error: error.message
+        });
+      }
+    })
+
 
     await client.db("admin").command({ ping: 1 });
     console.log("✅ Pinged your deployment successfully!");
