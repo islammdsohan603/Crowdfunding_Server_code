@@ -38,13 +38,14 @@ const run = async () => {
 
     // get all crowdfunding data
 
-    app.get("/api/all/data", async (req, res) => {
+    app.get("/api/funded/data", async (req, res) => {
       try {
-        const data = await productsCollection.find().toArray()
+        const data = await productsCollection.find().sort({ amountRaised: -1 }).limit(6).toArray()
 
         if (!data || data.length === 0) {
           return res.status(404).send({ success: false, message: "No data found!" });
         }
+
 
         res.status(200).send(data)
 
