@@ -28,13 +28,35 @@ const run = async () => {
     console.log('Mongo Connected');
 
     const database = client.db("Crowdfunding");
-    const productsCollection = database.collection("crowdfundingCollction")
+    const productsCollection = database.collection("campaigns")
 
 
     // Home Route
     app.get("/", (req, res) => {
       res.send("🚀 E-commerce Backend Server Running");
     });
+
+    // get all crowdfunding data
+
+    app.get("/api/all/data", async (req, res) => {
+      try {
+        const data = await productsCollection.find().toArray()
+
+        if (!data || data.length === 0) {
+          return res.status(404).send({ success: false, message: "No data found!" });
+        }
+
+        res.status(200).send(data)
+
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        res.status(500).send({
+          success: false,
+          message: "Internal Server Error",
+          error: error.message
+        });
+      }
+    })
 
     await client.db("admin").command({ ping: 1 });
     console.log("✅ Pinged your deployment successfully!");
