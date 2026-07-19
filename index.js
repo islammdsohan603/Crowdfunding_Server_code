@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 dotenv.config();
 
@@ -96,6 +96,38 @@ const run = async () => {
         });
       }
     });
+
+    // get single data api
+
+    app.get("/api/details/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+
+        if (!ObjectId.isValid(id)) {
+          return res.status(400).send({ success: false, message: "Invalid ID format" });
+        }
+
+        const query = { _id: new ObjectId(id) };
+        const data = await productsCollection.findOne(query);
+
+        if (!data) {
+          return res.status(404).send({ success: false, message: "Data not found!" });
+        }
+
+        res.status(200).send({
+          success: true,
+          data: data
+        })
+
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        res.status(500).send({
+          success: false,
+          message: "Internal Server Error",
+          error: error.message
+        });
+      }
+    })
 
     await client.db("admin").command({ ping: 1 });
     console.log("✅ Pinged your deployment successfully!");
