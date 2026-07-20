@@ -65,15 +65,21 @@ const run = async () => {
       try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 6;
+        const category = req.query.category;
+
+        let query = {};
+        if (category && category !== 'all') {
+          query.category = category;
+        }
 
         const skip = (page - 1) * limit;
 
-        const totalCampaigns = await productsCollection.countDocuments();
+        const totalCampaigns = await productsCollection.countDocuments(query);
 
         const totalPages = Math.ceil(totalCampaigns / limit);
 
         const data = await productsCollection
-          .find()
+          .find(query)
           .skip(skip)
           .limit(limit)
           .toArray();
