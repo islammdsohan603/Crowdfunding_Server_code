@@ -569,7 +569,11 @@ const run = async () => {
       const page = parseInt(req.query.page, 10) || 1;
       const limit = parseInt(req.query.limit, 10) || 6;
       const category = req.query.category;
-      const query = approvedOpenCampaignQuery();
+
+
+      // const query = approvedOpenCampaignQuery(); 
+      const query = {};
+
       if (category && category !== 'all') {
         query.category = { $regex: new RegExp(`^${category}$`, 'i') };
       }
