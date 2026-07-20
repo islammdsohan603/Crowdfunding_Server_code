@@ -59,23 +59,25 @@ const run = async () => {
       }
     })
 
-    // get all data api created
 
+
+    // get all data api created
     app.get("/api/all/data", async (req, res) => {
       try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 6;
         const category = req.query.category;
 
+
         let query = {};
         if (category && category !== 'all') {
-          query.category = category;
+
+          query.category = { $regex: new RegExp(`^${category}$`, 'i') };
         }
 
         const skip = (page - 1) * limit;
 
         const totalCampaigns = await productsCollection.countDocuments(query);
-
         const totalPages = Math.ceil(totalCampaigns / limit);
 
         const data = await productsCollection
@@ -94,7 +96,6 @@ const run = async () => {
 
       } catch (error) {
         console.error("Error fetching data:", error);
-
         res.status(500).send({
           success: false,
           message: "Internal Server Error",
@@ -102,7 +103,6 @@ const run = async () => {
         });
       }
     });
-
     // get single data api
 
     app.get("/api/details/:id", async (req, res) => {
