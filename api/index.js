@@ -600,6 +600,6 @@ const run = async () => {
 
 run().catch(console.dir);
 
-app.listen(port, () => {
-  console.log(`Momentum backend listening on port ${port}`);
-});
+
+
+module.exports = app;
